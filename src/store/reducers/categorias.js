@@ -1,11 +1,14 @@
 import { createStandaloneToast } from "@chakra-ui/toast";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import categoriasService from "services/categorias";
 import { resetarCarrinho } from "./carrinho";
 
 const { toast } = createStandaloneToast();
 
 const initialState = [];
+
+export const carregarCategorias = createAction("categorias/carregarCategorias");
+export const carregarCategoria = createAction("categorias/carregarCategoria");
 
 export const buscarCategorias = createAsyncThunk(
   "categorias/buscar",
@@ -15,46 +18,27 @@ export const buscarCategorias = createAsyncThunk(
 const categoriasSlice = createSlice({
   name: "categorias",
   initialState,
+  reducers: {
+    adicionarTodasAsCategorias: (_, { payload }) => {
+      return payload;
+    },
+    adicionarCategoria: (state, { payload }) => {
+      state.push(payload)
+    },
+  },
   extraReducers: (builder) => {
-    builder
-      .addCase(buscarCategorias.fulfilled, (_, { payload }) => {
-        toast({
-          title: "Sucesso!",
-          description: "Categorias carregadas com sucesso!",
-          status: "success",
-          duration: 2000,
-          isClosable: true,
-        });
-        return payload;
-      })
-      .addCase(buscarCategorias.pending, () => {
-        toast({
-          title: "Carregando",
-          description: "Carregando categorias",
-          status: "loading",
-          duration: 2000,
-          isClosable: true,
-        });
-      })
-      .addCase(buscarCategorias.rejected, () => {
-        toast({
-          title: "Erro",
-          description: "Erro na busca de categorias",
-          status: "error",
-          duration: 2000,
-          isClosable: true,
-        });
-      })
-      .addCase(resetarCarrinho.type, () => {
-        toast({
-          title: "Sucesso!",
-          description: "Compra completada com sucesso!",
-          status: "success",
-          duration: 2000,
-          isClosable: true,
-        });
+    builder.addCase(resetarCarrinho.type, () => {
+      toast({
+        title: "Sucesso!",
+        description: "Compra completada com sucesso!",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
       });
+    });
   },
 });
+
+export const { adicionarTodasAsCategorias, adicionarCategoria } = categoriasSlice.actions;
 
 export default categoriasSlice.reducer;
